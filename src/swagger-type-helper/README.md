@@ -55,4 +55,4 @@ type FnInfo = {
 };
 ```
 
-> 如果有更进一步修改的需求，可直接将`content.js`中的内容也复制到 temper monkey 脚本中，删除脚本引入代码，删除 interceptor 回调代码即可
+> 如果有更进一步修改的需求，可直接将`content.js`中的内容也复制到 temper monkey 脚本中，删除脚本引入代码，删除 interceptor 回调代码即可，但是这个使用方式不能自动获取最新的脚本，后续都需要自行维护
