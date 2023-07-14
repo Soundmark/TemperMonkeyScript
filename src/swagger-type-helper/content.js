@@ -65,8 +65,11 @@ const convertHtmlToArray = (node, arr = []) => {
         obj.level = pl / 20;
       }
     });
-    if (!["data", "retCode", "retMsg"].includes(obj.name)) {
+    if (obj.level !== 0) {
       obj.type = obj.type.replace(/\(.*\)/, "").replace("integer", "number");
+      if (!["object", "array", "string", "number"].includes(obj.type)) {
+        obj.type = "object";
+      }
       arr.push(obj);
     }
   });
@@ -90,18 +93,25 @@ const observer = new MutationObserver(() => {
         const docTable = item.querySelectorAll(".ant-table-wrapper")[2];
         const body = docTable.querySelector(".ant-table-tbody");
         const arr = convertHtmlToArray(body);
+        const name = item
+          .querySelector(".knife4j-api-summary")
+          .childNodes[1].innerText.split("/")
+          .reverse()[0]
+          .replace(/^[^A-Z]*([A-Z])/, "$1");
         const complexTypeList = [];
         interceptor.onBeforeTypeCopy?.(arr);
         let text = arr.reduce((acc, cur, index) => {
           const pre = new Array(cur.level).fill("  ").join("");
-          if (
+          while (
             complexTypeList.length &&
-            cur.level === complexTypeList[0].level
+            cur.level <= complexTypeList[0].level
           ) {
-            acc += `${pre}${complexTypeList[0].end}`;
+            acc += `${new Array(complexTypeList[0].level).fill("  ").join("")}${
+              complexTypeList[0].end
+            }`;
             complexTypeList.shift();
           }
-          acc += `${pre}/** ${cur.description} */\n`;
+          acc += `${pre}/** ${cur.description || "未知"} */\n`;
           if (cur.type === "array") {
             if (
               arr[index + 1] !== undefined &&
@@ -110,7 +120,9 @@ const observer = new MutationObserver(() => {
               acc += `${pre}${cur.name}: {\n`;
               complexTypeList.unshift({ end: "}[];\n", level: cur.level });
             } else {
-              acc += `${pre}${cur.name}: any[];\n`;
+              acc += `${pre}${cur.name}: ${
+                ["number", "string"].includes(cur.remark) ? cur.remark : "any"
+              }[];\n`;
             }
           } else if (cur.type === "object") {
             if (
@@ -130,7 +142,11 @@ const observer = new MutationObserver(() => {
         if (complexTypeList.length) {
           text += "  " + complexTypeList[0].end;
         }
-        const type = "export interface IDataParam {\n" + text + "}";
+        const type =
+          `export interface ${name} {\n` +
+          text +
+          "  [key: string]: any;\n" +
+          "}";
         GM_setClipboard(type);
         Swal.fire({
           position: "top",
@@ -145,35 +161,39 @@ const observer = new MutationObserver(() => {
   };
 
   fnBtn.onclick = () => {
-    const urlNode = document.querySelector(".knife4j-api-summary");
-    const method = urlNode.childNodes[0].innerText;
-    const url = urlNode.childNodes[1].innerText;
-    const fnName = url.split("/").reverse()[0];
-    const name = document.querySelector(".knife4j-api-copy-address")?.parentNode
-      ?.childNodes[0].innerText;
+    content.childNodes.forEach((item) => {
+      if (item.attributes["aria-hidden"]?.value === "false") {
+        const urlNode = item.querySelector(".knife4j-api-summary");
+        const method = urlNode.childNodes[0].innerText;
+        const url = urlNode.childNodes[1].innerText;
+        const fnName = url.split("/").reverse()[0];
+        const name = item.querySelector(".knife4j-api-copy-address")?.parentNode
+          ?.childNodes[0].innerText;
 
-    const obj = { url, method, name, fnName };
-    interceptor.onBeforeFnCopy?.(obj);
+        const obj = { url, method, name, fnName };
+        interceptor.onBeforeFnCopy?.(obj);
 
-    const fn = [
-      `/** ${obj.name} */`,
-      `export const use${obj.fnName[0].toUpperCase()}${obj.fnName.slice(
-        1
-      )} = () => useService(`,
-      `  {`,
-      `    url: '${obj.url.match(/\/web.+/)}',`,
-      `    method: '${obj.method.toLowerCase()}',`,
-      `  }`,
-      `)`,
-    ];
-    GM_setClipboard(fn.join("\n"));
-    Swal.fire({
-      position: "top",
-      toast: true,
-      showConfirmButton: false,
-      timer: 1000,
-      icon: "success",
-      title: "复制Fn定义成功",
+        const fn = [
+          `/** ${obj.name} */`,
+          `export const use${obj.fnName[0].toUpperCase()}${obj.fnName.slice(
+            1
+          )} = () => useService(`,
+          `  {`,
+          `    url: '${obj.url.match(/\/web.+/)}',`,
+          `    method: '${obj.method.toLowerCase()}',`,
+          `  }`,
+          `)`,
+        ];
+        GM_setClipboard(fn.join("\n"));
+        Swal.fire({
+          position: "top",
+          toast: true,
+          showConfirmButton: false,
+          timer: 1000,
+          icon: "success",
+          title: "复制Fn定义成功",
+        });
+      }
     });
   };
 
