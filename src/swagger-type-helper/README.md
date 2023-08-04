@@ -4,9 +4,9 @@
 
 ## 用法
 
-1. 新建 temper monkey 脚本
-2. 将`index.js`内容复制到新建脚本中(覆盖新建脚本中的默认内容)
-3. 保存脚本，到 swagger 网页中刷新，如果右下角出现按钮则说明脚本生效
+[点击安装](https://github.com/Soundmark/TemperMonkeyScript/raw/main/src/swagger-type-helper/index.user.js)
+
+> 注意：需要安装油猴插件
 
 ## api
 
@@ -54,5 +54,3 @@ type FnInfo = {
   fnName: string;
 };
 ```
-
-> 如果有更进一步修改的需求，可直接将`content.js`中的内容也复制到 temper monkey 脚本中，删除脚本引入代码，删除 interceptor 回调代码即可，但是这个使用方式不能自动获取最新的脚本，后续都需要自行维护
