@@ -9,8 +9,8 @@
 // @grant        GM_addStyle
 // @grant        GM_setClipboard
 // @require      https://cdn.jsdelivr.net/npm/sweetalert2
-// @updateURL    https://raw.githubusercontent.com/Soundmark/TemperMonkeyScript/main/src/swagger-type-helper/index.js
-// @downloadURL    https://raw.githubusercontent.com/Soundmark/TemperMonkeyScript/main/src/swagger-type-helper/index.js
+// @updateURL    https://github.com/Soundmark/TemperMonkeyScript/raw/main/src/swagger-type-helper/index.user.js
+// @downloadURL  https://github.com/Soundmark/TemperMonkeyScript/raw/main/src/swagger-type-helper/index.user.js
 // ==/UserScript==
 
 const interceptor = {
