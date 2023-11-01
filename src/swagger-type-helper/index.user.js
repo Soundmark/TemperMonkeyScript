@@ -189,6 +189,9 @@ const observer = new MutationObserver(() => {
         const fnName = url.split("/").reverse()[0];
         const name = item.querySelector(".knife4j-api-copy-address")?.parentNode
           ?.childNodes[0].innerText;
+        const prefix = window.location.pathname
+          .replace("/doc.html", "")
+          .match(/\/\w+$/);
 
         const obj = { url, method, name, fnName };
         interceptor.onBeforeFnCopy?.(obj);
@@ -199,7 +202,7 @@ const observer = new MutationObserver(() => {
             1
           )} = () => useService(`,
           `  {`,
-          `    url: '${obj.url.match(/\/web.+/)}',`,
+          `    url: '${obj.url.match(new RegExp(prefix + ".+"))}',`,
           `    method: '${obj.method.toLowerCase()}',`,
           `  }`,
           `)`,
