@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Swagger Helper
 // @namespace    https://github.com/Soundmark/TemperMonkeyScript/tree/main/src/swagger-type-helper
-// @version      0.2
+// @version      0.3
 // @description  快速生成swagger接口的typescript定义
 // @author       郑家豪
 // @match        *://*/*/doc.html*
