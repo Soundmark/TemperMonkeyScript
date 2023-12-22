@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Swagger Helper
 // @namespace    https://github.com/Soundmark/TemperMonkeyScript/tree/main/src/swagger-type-helper
-// @version      0.3
+// @version      0.4
 // @description  快速生成swagger接口的typescript定义
 // @author       郑家豪
 // @match        *://*/*/doc.html*
@@ -87,7 +87,9 @@ const convertHtmlToArray = (node, arr = []) => {
     });
     if (obj.level !== 0) {
       obj.type = obj.type.replace(/\(.*\)/, "").replace("integer", "number");
-      if (!["object", "array", "string", "number"].includes(obj.type)) {
+      if (
+        !["object", "array", "string", "number", "boolean"].includes(obj.type)
+      ) {
         obj.type = "object";
       }
       arr.push(obj);
@@ -141,7 +143,9 @@ const observer = new MutationObserver(() => {
               complexTypeList.unshift({ end: "}[];\n", level: cur.level });
             } else {
               acc += `${pre}${cur.name}: ${
-                ["number", "string"].includes(cur.remark) ? cur.remark : "any"
+                ["number", "string", "boolean"].includes(cur.remark)
+                  ? cur.remark
+                  : "any"
               }[];\n`;
             }
           } else if (cur.type === "object") {
